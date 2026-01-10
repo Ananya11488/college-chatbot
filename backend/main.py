@@ -1,8 +1,18 @@
+from fastapi.middleware.cors import CORSMiddleware
+
 from database import create_table, save_chat, get_all_chats
 
 from fastapi import FastAPI
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 create_table()
 
 
