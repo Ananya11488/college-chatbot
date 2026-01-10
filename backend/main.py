@@ -1,6 +1,10 @@
+from database import create_table, save_chat
+
 from fastapi import FastAPI
 
 app = FastAPI()
+create_table()
+
 
 @app.get("/")
 def read_root():
@@ -29,12 +33,15 @@ def generate_reply(user_message: str) -> str:
     else:
         return "Sorry, I didn’t understand that. Try asking about exams, courses, or clubs."
 
-
 @app.post("/chat")
 def chat(request: ChatRequest):
     user_message = request.message.lower()
     reply = generate_reply(user_message)
+
+    save_chat(user_message, reply)
+
     return {"reply": reply}
+
 
 
 
