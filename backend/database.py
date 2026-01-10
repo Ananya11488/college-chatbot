@@ -31,3 +31,25 @@ def save_chat(user_message: str, bot_reply: str):
 
     conn.commit()
     conn.close()
+
+def get_all_chats():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT user_message, bot_reply, timestamp FROM chats ORDER BY id DESC"
+    )
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    chats = []
+    for row in rows:
+        chats.append({
+            "user_message": row[0],
+            "bot_reply": row[1],
+            "timestamp": row[2]
+        })
+
+    return chats
+

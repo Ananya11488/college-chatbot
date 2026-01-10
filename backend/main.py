@@ -1,4 +1,4 @@
-from database import create_table, save_chat
+from database import create_table, save_chat, get_all_chats
 
 from fastapi import FastAPI
 
@@ -41,6 +41,9 @@ def chat(request: ChatRequest):
     save_chat(user_message, reply)
 
     return {"reply": reply}
+@app.get("/history")
+def get_chat_history():
+    return get_all_chats()
 
 
 
