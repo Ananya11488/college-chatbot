@@ -19,19 +19,23 @@ from pydantic import BaseModel
 class ChatRequest(BaseModel):
     message: str
 
+def generate_reply(user_message: str) -> str:
+    if "exam" in user_message:
+        return "Exams start from 15th March."
+    elif "course" in user_message:
+        return "We offer CS, IT, and AI courses."
+    elif "club" in user_message:
+        return "We have music, dance, fashion, and coding clubs."
+    else:
+        return "Sorry, I didn’t understand that. Try asking about exams, courses, or clubs."
+
 
 @app.post("/chat")
 def chat(request: ChatRequest):
     user_message = request.message.lower()
+    reply = generate_reply(user_message)
+    return {"reply": reply}
 
-    if "exam" in user_message:
-        return {"reply": "Exams start from 15th March."}
-    elif "course" in user_message:
-        return {"reply": "We offer CS, IT, and AI courses."}
-    elif "club" in user_message:
-        return {"reply": "We have music, dance, fashion, and coding clubs."}
-    else:
-        return {"reply": "Sorry, I didn’t understand that. Try asking about exams, courses, or clubs."}
 
 
 
