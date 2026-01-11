@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>College Assistant Chatbot</title>
+    <style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    #chatbox {
+        width: 420px;
+        background: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    #header {
+        background: #5a67d8;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    #messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        background: #f7f7f7;
+    }
+
+    .message {
+        max-width: 75%;
+        padding: 10px 14px;
+        margin: 8px 0;
+        border-radius: 18px;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .user {
+        background: #5a67d8;
+        color: white;
+        margin-left: auto;
+        border-bottom-right-radius: 5px;
+    }
+
+    .bot {
+        background: #e2e8f0;
+        color: #333;
+        margin-right: auto;
+        border-bottom-left-radius: 5px;
+    }
+
+    #inputArea {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+    }
+
+    input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 20px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+
+    button {
+        margin-left: 10px;
+        padding: 10px 16px;
+        border-radius: 20px;
+        border: none;
+        background: #5a67d8;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #434190;
+    }
+
+    .timestamp {
+        font-size: 10px;
+        opacity: 0.6;
+        margin-top: 4px;
+    }
+</style>
+
+    </head>
+<body>
+
+<div id="chatbox">
+    <div id="header">College Assistant Chatbot</div>
+    <div id="messages"></div>
+
+    <div id="inputArea">
+        <input id="userInput" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    function getTime() {
+        const now = new Date();
+        return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function getTimeFromISO(iso) {
+        const date = new Date(iso);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    async function loadHistory() {
+        const response = await fetch("http://127.0.0.1:8000/history");
+        const chats = await response.json();
+
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.innerHTML = "";
+
+        chats.reverse().forEach(chat => {
+            messagesDiv.innerHTML += `
+                <div class="message user">
+                    ${chat.user_message}
+                    <div class="timestamp">${getTimeFromISO(chat.timestamp)}</div>
+                </div>
+                <div class="message bot">
+                    ${chat.bot_reply}
+                    <div class="timestamp">${getTimeFromISO(chat.timestamp)}</div>
+                </div>
+            `;
+        });
+
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById("userInput");
+        const message = input.value.trim();
+        if (!message) return;
+
+        const messagesDiv = document.getElementById("messages");
+
+        messagesDiv.innerHTML += `
+            <div class="message user">
+                ${message}
+                <div class="timestamp">${getTime()}</div>
+            </div>
+        `;
+
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        input.value = "";
+
+        setTimeout(async () => {
+            const response = await fetch("http://127.0.0.1:8000/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message })
+            });
+
+            const data = await response.json();
+
+            messagesDiv.innerHTML += `
+                <div class="message bot">
+                    ${data.reply}
+                    <div class="timestamp">${getTime()}</div>
+                </div>
+            `;
+
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }, 500);
+    }
+
+    window.onload = loadHistory;
+</script>
+
+</body>
+</html>
