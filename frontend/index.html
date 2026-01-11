@@ -3,6 +3,13 @@
 <head>
     <title>College Assistant Chatbot</title>
     <style>
+    .typing {
+    font-size: 12px;
+    font-style: italic;
+    opacity: 0.7;
+    margin: 8px 0;
+}
+
     body {
         font-family: 'Segoe UI', sans-serif;
         background: linear-gradient(135deg, #667eea, #764ba2);
@@ -142,44 +149,53 @@
 
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
-
     async function sendMessage() {
-        const input = document.getElementById("userInput");
-        const message = input.value.trim();
-        if (!message) return;
+    const input = document.getElementById("userInput");
+    const button = document.querySelector("button");
+    const message = input.value.trim();
+    if (!message) return;
 
-        const messagesDiv = document.getElementById("messages");
+    const messagesDiv = document.getElementById("messages");
 
-        messagesDiv.innerHTML += `
-            <div class="message user">
-                ${message}
-                <div class="timestamp">${getTime()}</div>
-            </div>
-        `;
+    messagesDiv.innerHTML += `
+        <div class="message user">
+            ${message}
+            <div class="timestamp">${getTime()}</div>
+        </div>
+    `;
 
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        input.value = "";
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    input.value = "";
+    button.disabled = true;
 
-        setTimeout(async () => {
-            const response = await fetch("http://127.0.0.1:8000/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message })
-            });
+    // Typing indicator
+    const typingDiv = document.createElement("div");
+    typingDiv.className = "typing";
+    typingDiv.innerText = "Bot is typing...";
+    messagesDiv.appendChild(typingDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-            const data = await response.json();
+    const response = await fetch("http://127.0.0.1:8000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+    });
 
-            messagesDiv.innerHTML += `
-                <div class="message bot">
-                    ${data.reply}
-                    <div class="timestamp">${getTime()}</div>
-                </div>
-            `;
+    const data = await response.json();
 
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }, 500);
-    }
+    typingDiv.remove();
 
+    messagesDiv.innerHTML += `
+        <div class="message bot">
+            ${data.reply}
+            <div class="timestamp">${getTime()}</div>
+        </div>
+    `;
+
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    button.disabled = false;
+}
+    
     window.onload = loadHistory;
 </script>
 
