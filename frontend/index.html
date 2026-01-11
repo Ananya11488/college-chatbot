@@ -81,6 +81,9 @@
             opacity: 0.6;
             margin-top: 4px;
         }
+        #historyMessages {
+    margin-bottom: 10px;
+}
 
         .typing {
             font-size: 12px;
@@ -152,6 +155,7 @@
         const historyDiv = document.getElementById("historyMessages");
         const button = document.getElementById("toggleHistory");
         const messages = document.getElementById("messages");
+        button.disabled = true;
 
         historyVisible = !historyVisible;
 
@@ -160,7 +164,9 @@
             const chats = await res.json();
 
             historyDiv.innerHTML = "";
-
+            if (chats.length === 0) {
+            historyDiv.innerHTML = `<div class="typing">No chat history yet</div>`;
+        } else {
             chats.reverse().forEach(chat => {
                 historyDiv.innerHTML += `
                     <div class="message user">
@@ -173,7 +179,7 @@
                     </div>
                 `;
             });
-
+           }
             historyDiv.style.display = "block";
             button.innerText = "Hide Chat History";
             
@@ -183,6 +189,7 @@
             button.innerText = "Show Chat History";
             
         }
+        button.disabled = false;
     }
 
     async function sendMessage() {
