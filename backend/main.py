@@ -1,7 +1,11 @@
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import create_table, save_chat, get_all_chats
-
+from ai_service import (
+    get_ai_response,
+    is_student_related,
+    generate_study_plan
+)
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -72,8 +76,32 @@ def generate_reply(user_message: str) -> str:
 
 @app.post("/chat")
 def chat(request: ChatRequest):
-    user_message = request.message.lower()
-    reply = generate_reply(user_message)
+    user_message = request.message
+
+    message_lower = user_message.lower()
+
+    if "study plan" in message_lower:
+
+        if "dbms" in message_lower:
+            reply = generate_study_plan("DBMS", 7)
+
+        elif "os" in message_lower or "operating system" in message_lower:
+            reply = generate_study_plan("Operating Systems", 7)
+
+        else:
+            reply = (
+                "Currently I can create study plans for "
+                "DBMS and Operating Systems."
+            )
+
+    elif is_student_related(user_message):
+        reply = get_ai_response(user_message)
+
+    else:
+        reply = (
+            "I'm designed to help with academics, internships, "
+            "placements, college life, and career preparation. 🎓"
+        )
 
     save_chat(user_message, reply)
 
@@ -81,7 +109,6 @@ def chat(request: ChatRequest):
 @app.get("/history")
 def get_chat_history():
     return get_all_chats()
-
 
 
 
