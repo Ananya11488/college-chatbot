@@ -1,7 +1,13 @@
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import create_table, save_chat, get_all_chats
+from ai_service import (
+    get_ai_response,
+    is_student_related,
+    generate_study_plan,
+    generate_quiz
 
+)
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -72,8 +78,55 @@ def generate_reply(user_message: str) -> str:
 
 @app.post("/chat")
 def chat(request: ChatRequest):
-    user_message = request.message.lower()
-    reply = generate_reply(user_message)
+    user_message = request.message
+
+    message_lower = user_message.lower()
+    
+    if "quiz" in message_lower:
+
+        if "dbms" in message_lower:
+            reply = generate_quiz("DBMS")
+
+        elif "os" in message_lower or "operating system" in message_lower:
+            reply = generate_quiz("Operating Systems")
+
+        else:
+            reply = (
+               "Currently I can generate quizzes for "
+               "DBMS and Operating Systems."
+            )
+
+    elif "study plan" in message_lower:
+
+        if "dbms" in message_lower:
+            reply = generate_study_plan("DBMS")
+
+        elif "os" in message_lower or "operating system" in message_lower:
+            reply = generate_study_plan("Operating Systems")
+
+        else:
+            reply = (
+                "Currently I can create study plans for "
+                "DBMS and Operating Systems."
+            )
+    
+
+    else:
+
+        basic_reply = generate_reply(message_lower)
+
+        if "I'm not sure about that yet" not in basic_reply:
+            reply = basic_reply
+
+        elif is_student_related(user_message):
+            reply = get_ai_response(user_message)
+
+        else:
+            reply = (
+                "I'm designed to help with academics, internships, "
+                "placements, college life, career preparation, "
+                "DBMS, and Operating Systems. 🎓"
+            )
 
     save_chat(user_message, reply)
 
@@ -81,7 +134,6 @@ def chat(request: ChatRequest):
 @app.get("/history")
 def get_chat_history():
     return get_all_chats()
-
 
 
 

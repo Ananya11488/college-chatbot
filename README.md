@@ -1,11 +1,52 @@
-# College Assistant Chatbot
+#  College Assistant Chatbot
 
-This is a full-stack chatbot project built using Python and FastAPI.
+A full-stack chatbot application designed to assist college students with common queries related to courses, exams, clubs, and placements.
 
-The chatbot helps college students by answering queries related to:
-- Courses
-- Exams
-- Clubs
-- Placements
+This project focuses on clean backend design, thoughtful frontend UX, and real-world engineering practices like state management, debugging, and version control.
 
-This project is being built step-by-step to learn backend, frontend, databases, and GitHub.
+
+
+
+
+##  Features
+
+-  Interactive chat interface with real-time responses  
+-  Intent-based chatbot logic (no hardcoded replies)  
+-  Persistent chat history using SQLite  
+-  Toggleable chat history (show/hide for better focus)  
+-  Keyboard support (press Enter to send messages)  
+-  Typing indicator and loading states for better UX  
+-  Clean project structure with separate frontend & backend  
+
+
+
+##  Tech Stack
+
+**Backend**
+- Python
+- FastAPI
+- SQLite
+
+**Frontend**
+- HTML
+- CSS
+- Vanilla JavaScript
+
+**Tools**
+- Git & GitHub
+- REST APIs
+
+
+
+##  Project Structure
+
+
+college-chatbot/
+├── backend/
+│   ├── main.py
+│   ├── database.py
+│   └── chatbot.db
+├── frontend/
+│   └── index.html
+├── .gitignore
+└── README.md
