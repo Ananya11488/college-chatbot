@@ -16,6 +16,12 @@ def create_table():
             timestamp TEXT
         )
     """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS ai_cache (
+            question TEXT PRIMARY KEY,
+            answer TEXT
+        )
+    """)
 
     conn.commit()
     conn.close()
@@ -52,4 +58,38 @@ def get_all_chats():
         })
 
     return chats
+
+def get_cached_response(question):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT answer FROM ai_cache WHERE question = ?",
+        (question,)
+    )
+
+    row = cursor.fetchone()
+    conn.close()
+
+    if row:
+        return row[0]
+
+    return None
+
+
+def save_cached_response(question, answer):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        INSERT OR REPLACE INTO ai_cache
+        (question, answer)
+        VALUES (?, ?)
+        """,
+        (question, answer)
+    )
+
+    conn.commit()
+    conn.close()
 

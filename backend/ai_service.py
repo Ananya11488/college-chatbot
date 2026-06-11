@@ -1,6 +1,10 @@
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
+from database import (
+    get_cached_response,
+    save_cached_response
+)
 
 load_dotenv()
 
@@ -12,65 +16,106 @@ model = genai.GenerativeModel("gemini-2.5-flash")
 
 
 def get_ai_response(user_message):
+
     try:
+
+        cached_answer = get_cached_response(
+            user_message.lower().strip()
+        )
+
+        if cached_answer:
+            print("CACHE HIT")
+            return cached_answer
+
+        print("CACHE MISS")
+
         prompt = f"""
-        You are an AI Student Assistant.
+You are an AI Student Assistant.
 
-        Your job is to help students with:
-        - Academics
-        - Internships
-        - Placements
-        - Career preparation
-        - College life
+Your job is to help students with:
+- Academics
+- Internships
+- Placements
+- Career preparation
+- College life
 
-        Rules:
-        - Give concise answers.
-        - Use bullet points whenever possible.
-        - Keep answers under 150 words unless necessary.
-        - Be beginner friendly.
-        - Avoid huge paragraphs.
-        - Give practical advice.
-        - End with one useful tip if relevant.
+Rules:
+- Give concise answers.
+- Use bullet points whenever possible.
+- Keep answers under 150 words unless necessary.
+- Be beginner friendly.
+- Avoid huge paragraphs.
+- Give practical advice.
+- End with one useful tip if relevant.
 
-        Student Question:
-        {user_message}
-        """
+Student Question:
+{user_message}
+"""
 
         response = model.generate_content(prompt)
-        return response.text
+
+        answer = response.text
+
+        save_cached_response(
+            user_message.lower().strip(),
+            answer
+        )
+
+        return answer
 
     except Exception:
         return (
             "⚠️ AI service is temporarily busy. "
             "Please try again in a minute."
         )
-    
 
 def is_student_related(user_message):
     student_keywords = [
-        "college",
-        "student",
-        "course",
-        "subject",
-        "exam",
-        "internship",
-        "placement",
-        "job",
-        "career",
-        "resume",
-        "interview",
-        "cgpa",
-        "gpa",
-        "dbms",
-        "os",
-        "operating system",
-        "study",
-        "study plan",
-        "project",
-        "assignment",
-        "engineering",
-        "university"
-    ]
+    "college",
+    "student",
+    "course",
+    "subject",
+    "exam",
+    "internship",
+    "placement",
+    "job",
+    "career",
+    "resume",
+    "interview",
+    "cgpa",
+    "gpa",
+
+    # DBMS
+    "dbms",
+    "database",
+    "sql",
+    "normalization",
+    "er model",
+    "transaction",
+    "concurrency",
+    "indexing",
+
+    # OS
+    "os",
+    "operating system",
+    "process",
+    "thread",
+    "deadlock",
+    "paging",
+    "segmentation",
+    "scheduling",
+    "memory management",
+
+    # General academics
+    "study",
+    "study plan",
+    "project",
+    "assignment",
+    "engineering",
+    "university",
+    "semester",
+    "syllabus"
+]
 
     message = user_message.lower()
 
@@ -78,74 +123,65 @@ def is_student_related(user_message):
         keyword in message
         for keyword in student_keywords
     )
-    
-    
+ 
 def generate_study_plan(subject, days=7):
 
-    if subject.lower() == "dbms":
-        return """
-📚 DBMS Study Plan (7 Days)
+    try:
+        prompt = f"""
+You are an academic tutor.
 
-Day 1
-• Introduction to DBMS
-• Database Architecture
+Create a {days}-day study plan for {subject}.
 
-Day 2
-• ER Model
-• Entities, Attributes, Relationships
+Rules:
+- Day-wise format
+- Maximum 3 topics per day
+- Exam-oriented
+- Beginner-friendly
+- Use markdown headings
+- Keep it concise
+- Include revision on the last day
 
-Day 3
-• Relational Model
-• Keys and Constraints
+Example:
 
-Day 4
-• SQL Basics
-• SELECT, INSERT, UPDATE, DELETE
+## Day 1
+- Topic 1
+- Topic 2
 
-Day 5
-• Joins and Subqueries
-• Aggregate Functions
-
-Day 6
-• Normalization
-• 1NF, 2NF, 3NF, BCNF
-
-Day 7
-• Transactions
-• Concurrency Control
-• Revision + Practice Questions
+## Day 2
+- Topic 1
+- Topic 2
 """
 
-    elif subject.lower() in ["operating systems", "os"]:
-        return """
-💻 Operating Systems Study Plan (7 Days)
+        response = model.generate_content(prompt)
 
-Day 1
-• Introduction to OS
-• Types of Operating Systems
+        return f"📚 {subject} Study Plan\n\n" + response.text
 
-Day 2
-• Processes and Threads
+    except Exception:
+        return (
+            "⚠️ Unable to generate study plan right now. "
+            "Please try again later."
+        )
+    
+def generate_quiz(subject):
 
-Day 3
-• CPU Scheduling Algorithms
+    try:
 
-Day 4
-• Synchronization
-• Deadlocks
+        prompt = f"""
+Generate a quiz on {subject}.
 
-Day 5
-• Memory Management
-• Paging and Segmentation
-
-Day 6
-• File Systems
-• Disk Scheduling
-
-Day 7
-• Security Concepts
-• Revision + Practice Questions
+Rules:
+- 5 multiple choice questions
+- 4 options per question
+- Show correct answer after each question
+- Exam oriented
+- Use markdown formatting
 """
 
-    else:
-        return "Study plans are currently available only for DBMS and Operating Systems."
+        response = model.generate_content(prompt)
+
+        return f"📝 {subject} Quiz\n\n" + response.text
+
+    except Exception:
+        return (
+            "⚠️ Unable to generate quiz right now."
+        )    
