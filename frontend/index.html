@@ -242,7 +242,7 @@ button.send:hover {
         historyVisible = !historyVisible;
 
         if (historyVisible) {
-            const res = await fetch("http://127.0.0.1:8000/history");
+            const res = await fetch("https://ai-student-assistant-backend-5uc9.onrender.com/history");
             const chats = await res.json();
 
             historyDiv.innerHTML = "";
@@ -299,7 +299,7 @@ button.send:hover {
         typing.innerText = "Bot is typing...";
         live.appendChild(typing);
 
-        const res = await fetch("http://127.0.0.1:8000/chat", {
+        const res = await fetch("https://ai-student-assistant-backend-5uc9.onrender.com/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message })
