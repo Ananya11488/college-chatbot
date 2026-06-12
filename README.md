@@ -1,52 +1,204 @@
-#  College Assistant Chatbot
+# AI Student Assistant
 
-A full-stack chatbot application designed to assist college students with common queries related to courses, exams, clubs, and placements.
+An AI-powered academic assistant that helps students with subject-related queries, study planning, quiz generation, internships, placements, and career preparation.
 
-This project focuses on clean backend design, thoughtful frontend UX, and real-world engineering practices like state management, debugging, and version control.
+The project started as a rule-based college chatbot and was later upgraded with Gemini AI, response caching, study planning, quiz generation, and cloud deployment.
 
+---
 
+## Live Demo
 
+**Frontend:**
+https://6a2c410656b5424018d97504--profound-dodol-5c1211.netlify.app/
 
+**Backend:**
+https://ai-student-assistant-backend-5uc9.onrender.com/
 
-##  Features
+---
 
--  Interactive chat interface with real-time responses  
--  Intent-based chatbot logic (no hardcoded replies)  
--  Persistent chat history using SQLite  
--  Toggleable chat history (show/hide for better focus)  
--  Keyboard support (press Enter to send messages)  
--  Typing indicator and loading states for better UX  
--  Clean project structure with separate frontend & backend  
+## Features
 
+### AI Student Assistant
 
+* Answer academic questions using Gemini AI
+* Help with internships, placements, and career preparation
+* Provide concise, student-friendly responses
 
-##  Tech Stack
+### Study Plan Generator
 
-**Backend**
-- Python
-- FastAPI
-- SQLite
+* Generate structured study plans
+* Currently supports:
 
-**Frontend**
-- HTML
-- CSS
-- Vanilla JavaScript
+  * DBMS
+  * Operating Systems
 
-**Tools**
-- Git & GitHub
-- REST APIs
+### Quiz Generator
 
+* Generate topic-based quizzes
+* Supports DBMS and Operating Systems
 
+### Smart Response Caching
 
-##  Project Structure
+* Frequently asked questions are cached in SQLite
+* Reduces Gemini API usage
+* Improves response time
+
+### Chat History
+
+* Stores previous conversations in SQLite
+* View chat history directly from the UI
+
+### Rule-Based Assistant
+
+* Handles greetings and common college-related queries
+* Courses
+* Clubs
+* Placements
+* Exams
+
+---
+
+## 🛠 Tech Stack
+
+### Backend
+
+* Python
+* FastAPI
+* SQLite
+* Gemini 2.5 Flash API
+
+### Frontend
+
+* HTML
+* CSS
+* Vanilla JavaScript
+
+### Deployment
+
+* Render
+* Netlify
+
+### Tools
+
+* Git
+* GitHub
+* REST APIs
+
+---
+
+## Architecture
+
+User
+↓
+Frontend (Netlify)
+↓
+FastAPI Backend (Render)
+↓
+Gemini API
+↓
+SQLite Cache / Chat History
+↓
+Response Returned to User
+
+---
+
+## Project Structure
 
 
 college-chatbot/
 ├── backend/
 │   ├── main.py
+│   ├── ai_service.py
 │   ├── database.py
-│   └── chatbot.db
+│   ├── test_ai_service.py
+│   ├── test_gemini.py
+│   └── test_scope.py
 ├── frontend/
 │   └── index.html
+├── render.yaml
 ├── .gitignore
 └── README.md
+```
+
+---
+
+## Running Locally
+
+### 1. Clone the Repository
+
+```bash
+git clone <your-repository-url>
+cd college-chatbot
+```
+
+### 2. Create and Activate a Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+**Windows**
+
+```bash
+venv\Scripts\activate
+```
+
+**macOS/Linux**
+
+```bash
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure Environment Variables
+
+Create a `.env` file inside the `backend` folder:
+
+```env
+GEMINI_API_KEY=your_api_key_here
+```
+
+### 5. Run the Backend
+
+```bash
+cd backend
+uvicorn main:app --reload
+```
+
+Backend will be available at:
+
+```text
+http://127.0.0.1:8000
+```
+
+### 6. Open the Frontend
+
+Open `frontend/index.html` in your browser.
+
+---
+
+## Key Learnings
+
+* Building REST APIs with FastAPI
+* Integrating Generative AI APIs
+* SQLite database design
+* Response caching techniques
+* Frontend-backend communication
+* Cloud deployment using Render and Netlify
+* Git branching and version control
+
+---
+
+## Future Improvements
+
+* Support additional subjects
+* User authentication
+* Personalized study plans
+* Flashcards and revision notes
+* PostgreSQL database migration
+* Analytics dashboard
